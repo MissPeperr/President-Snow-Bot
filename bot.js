@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const config = require('./config.json');
 const DataManager = require('./data-manager.js')
+const utils = require("./utils.js")
+const RoleManager = require("./roles/roles.js")
 
 // Create an instance of a Discord client
 const client = new Discord.Client();
@@ -21,44 +23,26 @@ client.on('message', message => {
     }
     // Essentially start the gameplay for that person
     else if (message.content === 'I volunteer as tribute') {
-        message.author.send("Message, bitch");
+        console.log(message.author)
+        message.channel.send("<@" + message.author + ">,  you have been activated. Prepare your anus.");
+        //utils.activatePlayer(message);
     }
-    else if (message.content.toUpperCase().includes("SET ROLES")) {
+    else if (message.content.toUpperCase() === "ROLE INFO") {
 
-        // take roles from the next message
-        message.channel.send('Which Districts should I include? Separate Disctricts (roles) by -\'s, bitch');
-        const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
-        collector.on('collect', m => {
-            let rolesArray = m.content.split("-");
-            // trim and upperCase roles from user input and store in new Array
-            const trimmedRoles = rolesArray.map(role => role.toUpperCase().trim())
-            let rolesFromServer = [];
-            // retrieve the server's roles 
-            message.guild.roles.fetch().then(resp => {
-                // push each role from the user's server into new array
-                resp.cache.forEach(function (Role) {
-                    rolesFromServer.push(Role.name.toString().toUpperCase().trim());
-                });
-            }).then(() => {
-                // check to see if role that user inputs exists in their server
-                for (let role of trimmedRoles) {
-                    if (rolesFromServer.includes(role)) {
-                        //write to JSON
-                        // if user's role exists, then send to JSON
-                        let newRole = {
-                            name: role,
-                            serverId: 1
-                        }
-                        // modularized fetch calls; now located in data-manager.js
-                        DataManager.post("roles", newRole)
-                    }
-                }
-            })
+        RoleManager.handleRoles(message);
 
-        })
+    } else if (message.content.toUpperCase() === "PLAYER INFO") {
 
+        utils.handlePlayers(message);
+
+    } else if (message.content.toUpperCase() === "HELP") {
+        message.author.id === message.guild.ownerID || message.author.id === "137720507016544256" ?
+            message.channel.send("Available Commands: \`ping\`, \`role info\`, \`player info\`, \`I volunteer as tribute\`, \`help\`")
+            : message.channel.send("Available Commands: \`ping\`, \`I volunteer as tribute\`, \`help\`")
     }
 })
+
+
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 client.login(config.token);
