@@ -36,7 +36,7 @@ client.on('message', message => {
         utils.handlePlayers(message);
 
     } else if (message.content.toUpperCase() === "HELP") {
-        message.author.id === message.guild.ownerID || message.author.id === "137720507016544256" ?
+        message.author.id === message.guild.ownerID ?
             message.channel.send("Available Commands: \`ping\`, \`role info\`, \`player info\`, \`I volunteer as tribute\`, \`help\`")
             : message.channel.send("Available Commands: \`ping\`, \`I volunteer as tribute\`, \`help\`")
     }
